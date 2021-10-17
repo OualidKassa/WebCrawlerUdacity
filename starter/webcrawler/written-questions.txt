@@ -36,3 +36,17 @@ Q4. Identify three (3) different design patterns used in this project, and expla
     anything, you can name two things you disliked.
 
 
+Response :
+
+Q1. ParralellelWebCrawler is more efficient, it visit more urls than sequential
+
+Q2. (a)   If the manager have a computer run with one thread, there will be no benefice
+    (b)   With a multi-core computer parallelWebCramler will be more efficient, There will be more work to be done with pool who will split work across processors
+
+Q3. (a)   Profiled measure the time running of methods by annotate @Profiled, it's a cross-cutting concern
+    (b)   The methods with the annatation @Profiled
+
+Q4. - Builder Pattern use by CrawlerConfiguration
+    - Dependency With Guice library. Use in WebCrawlerMain for Profiler
+    - Proxy Pattern use by ProfilerImpl.
+
