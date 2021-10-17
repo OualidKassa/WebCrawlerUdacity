@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -65,9 +66,9 @@ final class ProfilerImpl implements Profiler {
     if (Files.notExists(path)){
       Files.createFile(path);
     }
-    BufferedWriter writer = Files.newBufferedWriter(path);
-    writeData(writer);
-    writer.flush();
+    try(BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND)){
+      writeData(writer);
+    }
   }
 
   @Override

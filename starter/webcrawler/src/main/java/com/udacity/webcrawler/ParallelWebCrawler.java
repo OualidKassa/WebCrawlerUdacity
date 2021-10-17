@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 final class ParallelWebCrawler implements WebCrawler {
@@ -72,6 +73,7 @@ final class ParallelWebCrawler implements WebCrawler {
     private final String url;
     private final Instant deadline;
     private final int maxDepth;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public WebCrawlAction(Map<String, Integer> counts, Set<String> visitedUrls, String url, Instant deadline, int maxDepth) {
       this.counts = counts;
@@ -83,6 +85,7 @@ final class ParallelWebCrawler implements WebCrawler {
 
     @Override
     protected void compute() {
+
       if (maxDepth == 0 || clock.instant().isAfter(deadline)) {
         return;
       }
@@ -91,10 +94,17 @@ final class ParallelWebCrawler implements WebCrawler {
           return;
         }
       }
-      if (visitedUrls.contains(url)) {
-        return;
+      try {
+        lock.lock();
+        if (!visitedUrls.add(url)) {
+          return;
+        }
+        visitedUrls.add(url);
+        // process URL and return
+      } finally {
+        lock.unlock();
       }
-      visitedUrls.add(url);
+
       PageParser.Result result = parserFactory.get(url).parse();
       for (Map.Entry<String, Integer> e : result.getWordCounts().entrySet()) {
         if (counts.containsKey(e.getKey())) {
